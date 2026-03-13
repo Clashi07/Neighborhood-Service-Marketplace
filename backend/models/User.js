@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide a password'],
     minlength: [6, 'Password must be at least 6 characters'],
-    select: false // Don't return password by default
+    select: false
   },
   phone: {
     type: String,
@@ -50,6 +50,25 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  // ✅ NEW FIELDS FOR APPROVAL
+  isApproved: {
+    type: Boolean,
+    default: function() {
+      // Auto-approve customers, require approval for providers
+      return this.role === 'customer' ? true : false;
+    }
+  },
+  approvedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  approvedAt: {
+    type: Date
+  },
+  rejectionReason: {
+    type: String
+  },
+  // END NEW FIELDS
   emailVerificationToken: String,
   emailVerificationExpire: Date,
   resetPasswordToken: String,
@@ -60,7 +79,7 @@ const userSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true,
-  discriminatorKey: 'role' // For Customer, Provider, Admin inheritance
+  discriminatorKey: 'role'
 });
 
 // Encrypt password before saving

@@ -12,6 +12,9 @@ import CustomerDashboard from './views/pages/CustomerDashboard';
 import ProviderDashboard from './views/pages/ProviderDashboard';
 import AdminDashboard from './views/pages/AdminDashboard';
 
+// Profile
+import CustomerProfile from './views/components/customer/CustomerProfile';
+
 import './App.css';
 
 function App() {
@@ -33,6 +36,14 @@ function App() {
               element={
                 <ProtectedRoute roles={['customer']}>
                   <CustomerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/customer/profile"
+              element={
+                <ProtectedRoute roles={['customer']}>
+                  <CustomerProfile />
                 </ProtectedRoute>
               }
             />

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import authService from '../../../services/authService';
-import './AuthForm.css';
+import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
 
 const ForgotPasswordForm = () => {
   const [email, setEmail] = useState('');
@@ -26,37 +27,58 @@ const ForgotPasswordForm = () => {
   };
 
   return (
-    <div className="auth-form">
-      <h2>Forgot Password</h2>
-      <p>Enter your email address and we'll send you a link to reset your password.</p>
-      
-      {message && <div className="alert alert-success">{message}</div>}
-      {error && <div className="alert alert-error">{error}</div>}
+    <div className="min-vh-100 d-flex align-items-center" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <Container>
+        <Row className="justify-content-center">
+          <Col md={6} lg={5}>
+            <Card className="shadow-lg border-0 rounded-lg">
+              <Card.Body className="p-5">
+                <div className="text-center mb-4">
+                  <h2 className="fw-bold text-primary">Forgot Password?</h2>
+                  <p className="text-muted">Enter your email to reset your password</p>
+                </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="email">Email Address</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            required
-          />
-        </div>
+                {message && <Alert variant="success">{message}</Alert>}
+                {error && <Alert variant="danger">{error}</Alert>}
 
-        <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? 'Sending...' : 'Send Reset Link'}
-        </button>
-      </form>
+                <Form onSubmit={handleSubmit}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Email Address</Form.Label>
+                    <Form.Control
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email"
+                      required
+                      size="lg"
+                    />
+                  </Form.Group>
 
-      <div className="auth-links">
-        <p>
-          <a href="/login">Back to Login</a>
-        </p>
-      </div>
+                  <div className="d-grid mb-3">
+                    <Button 
+                      variant="primary" 
+                      size="lg" 
+                      type="submit" 
+                      disabled={loading}
+                      className="fw-bold"
+                    >
+                      {loading ? 'Sending...' : 'Send Reset Link'}
+                    </Button>
+                  </div>
+                </Form>
+
+                <hr className="my-4" />
+
+                <div className="text-center">
+                  <Link to="/login" className="text-decoration-none">
+                    ← Back to Login
+                  </Link>
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
     </div>
   );
 };

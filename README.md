@@ -655,6 +655,15 @@ npm start
 
 ---
 
+**Sprint 2: Provider & Services**
+- Feature 4: Provider Profile Creation
+- Feature 5: Service Category Management
+- Feature 6: Portfolio Management (10 images max, 5MB limit)
+- Feature 7: Browse & Search Service Providers
+- Feature 8: Advanced Filter Providers
+- Feature 9: View Provider Profile Details
+
+---
 
 ## 🗄️ Database Schema
 

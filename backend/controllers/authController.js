@@ -80,6 +80,7 @@ exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
+    // Validate email & password
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -87,6 +88,7 @@ exports.login = async (req, res, next) => {
       });
     }
 
+    // Check for user
     const user = await User.findOne({ email }).select('+password');
 
     if (!user) {
@@ -96,6 +98,7 @@ exports.login = async (req, res, next) => {
       });
     }
 
+    // Check if password matches
     const isMatch = await user.comparePassword(password);
 
     if (!isMatch) {
@@ -105,10 +108,20 @@ exports.login = async (req, res, next) => {
       });
     }
 
+    // Check if account is active
     if (!user.isActive) {
       return res.status(401).json({
         success: false,
         message: 'Your account has been deactivated. Please contact support.'
+      });
+    }
+
+    // ✅ NEW: Check if account is approved
+    // ✅ Only providers need approval
+    if (user.role === 'provider' && !user.isApproved) {
+      return res.status(403).json({
+        success: false,
+        message: 'Your account is pending approval by an administrator. You will be notified once approved.'
       });
     }
 
