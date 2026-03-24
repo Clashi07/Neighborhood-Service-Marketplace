@@ -17,11 +17,12 @@ const ProviderDashboard = () => {
       {/* Navbar */}
       <Navbar bg="success" variant="dark" expand="lg" className="shadow-sm">
         <Container>
-          <Navbar.Brand href="#home">🏘️ Marketplace - Provider</Navbar.Brand>
+          <Navbar.Brand>🏘️ Marketplace - Provider</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
-              <Nav.Link href="#home">Dashboard</Nav.Link>
+              <Nav.Link onClick={() => navigate('/provider/dashboard')}>Dashboard</Nav.Link>
+              <Nav.Link onClick={() => navigate('/provider/categories')}>Categories</Nav.Link>
               <Nav.Link href="#profile">My Profile</Nav.Link>
               <Nav.Link href="#requests">Browse Requests</Nav.Link>
               <Nav.Link href="#bids">My Bids</Nav.Link>
@@ -96,22 +97,38 @@ const ProviderDashboard = () => {
                 <h4 className="mb-3">Quick Actions</h4>
                 <Row className="g-3">
                   <Col md={3}>
-                    <Button variant="success" className="w-100 py-3">
-                      ➕ Create Profile
+                    <Button 
+                      variant="success" 
+                      className="w-100 py-3"
+                      onClick={() => navigate('/provider/categories')}
+                    >
+                      📋 Browse Categories
                     </Button>
                   </Col>
                   <Col md={3}>
-                    <Button variant="outline-success" className="w-100 py-3">
-                      📋 Browse Requests
+                    <Button 
+                      variant="outline-success" 
+                      className="w-100 py-3"
+                      onClick={() => alert('Coming soon!')}
+                    >
+                      🔍 Browse Requests
                     </Button>
                   </Col>
                   <Col md={3}>
-                    <Button variant="outline-success" className="w-100 py-3">
+                    <Button 
+                      variant="outline-success" 
+                      className="w-100 py-3"
+                      onClick={() => alert('Coming soon!')}
+                    >
                       🖼️ Manage Portfolio
                     </Button>
                   </Col>
                   <Col md={3}>
-                    <Button variant="outline-success" className="w-100 py-3">
+                    <Button 
+                      variant="outline-success" 
+                      className="w-100 py-3"
+                      onClick={() => alert('Coming soon!')}
+                    >
                       👤 Edit Profile
                     </Button>
                   </Col>
@@ -145,7 +162,13 @@ const ProviderDashboard = () => {
               <Card.Body className="p-4">
                 <h5 className="mb-3">⚠️ Complete Your Profile</h5>
                 <p className="text-muted small">Set up your provider profile to start receiving service requests.</p>
-                <Button variant="success" className="w-100">Complete Profile</Button>
+                <Button 
+                  variant="success" 
+                  className="w-100"
+                  onClick={() => navigate('/provider/categories')}
+                >
+                  Select Categories
+                </Button>
               </Card.Body>
             </Card>
           </Col>

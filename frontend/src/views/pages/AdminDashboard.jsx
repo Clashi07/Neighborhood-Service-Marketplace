@@ -14,34 +14,48 @@ const AdminDashboard = () => {
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
-    fetchData();
+    fetchPendingUsers();
+    fetchAllUsers();
   }, []);
 
-  const fetchData = async () => {
+  const fetchPendingUsers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const [pendingRes, allRes] = await Promise.all([
-        axios.get('/api/users/pending', { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get('/api/users', { headers: { Authorization: `Bearer ${token}` } })
-      ]);
-      setPendingUsers(pendingRes.data.data);
-      setAllUsers(allRes.data.data);
+      const response = await axios.get('/api/users/pending', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPendingUsers(response.data.data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch users');
+      setError(err.response?.data?.message || 'Failed to fetch pending users');
     } finally {
       setLoading(false);
     }
   };
 
+  const fetchAllUsers = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('/api/users', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setAllUsers(response.data.data);
+    } catch (err) {
+      console.error('Failed to fetch all users:', err);
+    }
+  };
+
   const handleApprove = async (userId, userName) => {
     if (!window.confirm(`Approve ${userName}?`)) return;
+
     try {
       const token = localStorage.getItem('token');
       await axios.put(`/api/users/${userId}/approve`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      
       setSuccessMessage(`${userName} has been approved!`);
-      fetchData();
+      fetchPendingUsers();
+      fetchAllUsers();
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to approve user');
@@ -51,14 +65,17 @@ const AdminDashboard = () => {
   const handleReject = async (userId, userName) => {
     const reason = window.prompt(`Why are you rejecting ${userName}?`);
     if (!reason) return;
+
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`/api/users/${userId}/reject`,
+      await axios.put(`/api/users/${userId}/reject`, 
         { reason },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` }}
       );
+      
       setSuccessMessage(`${userName} has been rejected.`);
-      fetchData();
+      fetchPendingUsers();
+      fetchAllUsers();
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to reject user');
@@ -77,14 +94,6 @@ const AdminDashboard = () => {
     pending: pendingUsers.length
   };
 
-  if (loading) {
-    return (
-      <div className="min-vh-100 d-flex align-items-center justify-content-center">
-        <Spinner animation="border" variant="danger" />
-      </div>
-    );
-  }
-
   return (
     <div className="min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
       {/* Navbar */}
@@ -94,9 +103,8 @@ const AdminDashboard = () => {
           <Navbar.Toggle />
           <Navbar.Collapse>
             <Nav className="ms-auto">
-              <Nav.Link href="#dashboard">Dashboard</Nav.Link>
-              <Nav.Link href="#users">Manage Users</Nav.Link>
-              <Nav.Link href="#categories">Categories</Nav.Link>
+              <Nav.Link onClick={() => navigate('/admin/dashboard')}>Dashboard</Nav.Link>
+              <Nav.Link onClick={() => navigate('/admin/categories')}>Categories</Nav.Link>
               <Button variant="outline-light" size="sm" onClick={handleLogout} className="ms-2">
                 Logout
               </Button>
@@ -162,13 +170,51 @@ const AdminDashboard = () => {
           </Col>
         </Row>
 
+        {/* Quick Actions */}
+        <Row className="mb-4">
+          <Col>
+            <Card className="border-0 shadow-sm">
+              <Card.Body className="p-4">
+                <h4 className="mb-3">Quick Actions</h4>
+                <Row className="g-3">
+                  <Col md={4}>
+                    <Button 
+                      variant="danger" 
+                      className="w-100 py-3"
+                      onClick={() => navigate('/admin/categories')}
+                    >
+                      ⚙️ Manage Categories
+                    </Button>
+                  </Col>
+                  <Col md={4}>
+                    <Button variant="outline-danger" className="w-100 py-3">
+                      👥 View All Users
+                    </Button>
+                  </Col>
+                  <Col md={4}>
+                    <Button variant="outline-danger" className="w-100 py-3">
+                      📊 View Reports
+                    </Button>
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+
         {/* Pending Users */}
         <Row className="mb-4">
           <Col>
             <Card className="border-0 shadow-sm">
               <Card.Body className="p-4">
                 <h4 className="mb-3">⏳ Pending User Approvals</h4>
-                {pendingUsers.length === 0 ? (
+                
+                {loading ? (
+                  <div className="text-center py-5">
+                    <Spinner animation="border" variant="primary" />
+                    <p className="mt-2 text-muted">Loading...</p>
+                  </div>
+                ) : pendingUsers.length === 0 ? (
                   <div className="text-center py-5 text-muted">
                     <p className="mb-0">✅ No pending approvals</p>
                   </div>
@@ -195,12 +241,19 @@ const AdminDashboard = () => {
                           </td>
                           <td>{new Date(pendingUser.createdAt).toLocaleDateString()}</td>
                           <td>
-                            <Button variant="success" size="sm" className="me-2"
-                              onClick={() => handleApprove(pendingUser._id, pendingUser.name)}>
+                            <Button
+                              variant="success"
+                              size="sm"
+                              className="me-2"
+                              onClick={() => handleApprove(pendingUser._id, pendingUser.name)}
+                            >
                               ✓ Approve
                             </Button>
-                            <Button variant="danger" size="sm"
-                              onClick={() => handleReject(pendingUser._id, pendingUser.name)}>
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => handleReject(pendingUser._id, pendingUser.name)}
+                            >
                               ✗ Reject
                             </Button>
                           </td>

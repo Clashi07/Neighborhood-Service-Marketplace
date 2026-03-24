@@ -11,9 +11,10 @@ import ResetPasswordPage from './views/pages/ResetPasswordPage';
 import CustomerDashboard from './views/pages/CustomerDashboard';
 import ProviderDashboard from './views/pages/ProviderDashboard';
 import AdminDashboard from './views/pages/AdminDashboard';
+import ManageCategoriesPage from './views/pages/ManageCategoriesPage'; // ✅ ADD THIS
 
-// Profile
-import CustomerProfile from './views/components/customer/CustomerProfile';
+// Components
+import BrowseCategories from './views/components/provider/BrowseCategories'; // ✅ ADD THIS
 
 import './App.css';
 
@@ -30,7 +31,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
-            {/* Protected routes */}
+            {/* Customer routes */}
             <Route
               path="/customer/dashboard"
               element={
@@ -39,14 +40,8 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/customer/profile"
-              element={
-                <ProtectedRoute roles={['customer']}>
-                  <CustomerProfile />
-                </ProtectedRoute>
-              }
-            />
+
+            {/* Provider routes */}
             <Route
               path="/provider/dashboard"
               element={
@@ -56,10 +51,28 @@ function App() {
               }
             />
             <Route
+              path="/provider/categories"
+              element={
+                <ProtectedRoute roles={['provider']}>
+                  <BrowseCategories />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Admin routes */}
+            <Route
               path="/admin/dashboard"
               element={
                 <ProtectedRoute roles={['admin']}>
                   <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/categories"
+              element={
+                <ProtectedRoute roles={['admin']}>
+                  <ManageCategoriesPage />
                 </ProtectedRoute>
               }
             />
