@@ -14,7 +14,8 @@ connectDB();
 // Route files
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
-const serviceCategoryRoutes = require('./routes/serviceCategoryRoutes'); // ✅ ADD THIS
+const serviceCategoryRoutes = require('./routes/serviceCategoryRoutes'); 
+const serviceProvider = require('./routes/serviceProviderRoutes'); // ✅ ADD THIS
 
 const app = express();
 
@@ -34,7 +35,8 @@ app.use(cors({
 // Mount routers
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/categories', serviceCategoryRoutes); // ✅ ADD THIS
+app.use('/api/categories', serviceCategoryRoutes); 
+app.use('/api/v1/service-providers', serviceProvider); // ✅ ADD THIS
 
 // Error handler
 app.use(errorHandler);
