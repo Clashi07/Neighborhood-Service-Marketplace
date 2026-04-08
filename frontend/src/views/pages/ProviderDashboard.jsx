@@ -23,7 +23,7 @@ const ProviderDashboard = () => {
             <Nav className="ms-auto">
               <Nav.Link onClick={() => navigate('/provider/dashboard')}>Dashboard</Nav.Link>
               <Nav.Link onClick={() => navigate('/provider/categories')}>Categories</Nav.Link>
-              <Nav.Link href="#profile">My Profile</Nav.Link>
+              <Nav.Link onClick={() => navigate('/provider/profile')}>My Profile</Nav.Link> 
               <Nav.Link href="#requests">Browse Requests</Nav.Link>
               <Nav.Link href="#bids">My Bids</Nav.Link>
               <Nav.Link href="#bookings">My Jobs</Nav.Link>
@@ -127,11 +127,12 @@ const ProviderDashboard = () => {
                     <Button 
                       variant="outline-success" 
                       className="w-100 py-3"
-                      onClick={() => alert('Coming soon!')}
+                      onClick={() => navigate('/provider/edit-profile')}
                     >
                       👤 Edit Profile
                     </Button>
                   </Col>
+
                 </Row>
               </Card.Body>
             </Card>

@@ -15,7 +15,7 @@ connectDB();
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const serviceCategoryRoutes = require('./routes/serviceCategoryRoutes'); // ✅ ADD THIS
-
+const providerRoutes = require('./routes/providerRoutes'); //nahi
 const app = express();
 
 // Body parser
@@ -35,7 +35,7 @@ app.use(cors({
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/categories', serviceCategoryRoutes); // ✅ ADD THIS
-
+app.use('/api/providers', providerRoutes); //nahi
 // Error handler
 app.use(errorHandler);
 
