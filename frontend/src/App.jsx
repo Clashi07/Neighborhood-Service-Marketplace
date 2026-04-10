@@ -12,7 +12,10 @@ import CustomerDashboard from './views/pages/CustomerDashboard';
 import ProviderDashboard from './views/pages/ProviderDashboard';
 import AdminDashboard from './views/pages/AdminDashboard';
 import ManageCategoriesPage from './views/pages/ManageCategoriesPage'; // ✅ ADD THIS
-
+import EditProviderProfile from './views/pages/EditProviderProfile'; //nahi
+import ProviderProfileView from './views/pages/ProviderProfileView'; //nahi
+import BrowseProviders from './views/pages/BrowseProviders'; //nahi
+import BrowseServices from './views/pages/BrowseServices';//nahi
 // Components
 import BrowseCategories from './views/components/provider/BrowseCategories'; // ✅ ADD THIS
 
@@ -41,6 +44,27 @@ function App() {
               }
             />
 
+            {/* Customer routes */}
+            <Route
+              path="/providers"
+              element={
+                <ProtectedRoute roles={['customer', 'admin']}>
+                  <BrowseProviders />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Customer routes */}
+            <Route
+              path="/services"
+              element={
+                <ProtectedRoute roles={['customer', 'admin']}>
+                  <BrowseServices />
+                </ProtectedRoute>
+              }
+            />
+
+
             {/* Provider routes */}
             <Route
               path="/provider/dashboard"
@@ -58,7 +82,23 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
+            {/* Provider edit profile routes */} //nahi
+            <Route
+              path="/provider/edit-profile"
+              element={
+                <ProtectedRoute roles={['provider']}>
+                  <EditProviderProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/provider/profile"
+              element={
+                <ProtectedRoute roles={['provider']}>
+                  <ProviderProfileView />
+                </ProtectedRoute>
+              }
+            />
             {/* Admin routes */}
             <Route
               path="/admin/dashboard"

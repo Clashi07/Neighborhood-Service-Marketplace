@@ -23,7 +23,7 @@ const CustomerDashboard = () => {
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
               <Nav.Link href="#home">Home</Nav.Link>
-              <Nav.Link href="#services">Browse Services</Nav.Link>
+              <Nav.Link onClick={() => navigate('/services')}>Browse Services</Nav.Link>
               <Nav.Link href="#requests">My Requests</Nav.Link>
               <Nav.Link href="#bookings">My Bookings</Nav.Link>
               <Nav.Link onClick={() => navigate('/customer/profile')}>My Profile</Nav.Link>
@@ -102,7 +102,11 @@ const CustomerDashboard = () => {
                     </Button>
                   </Col>
                   <Col md={4}>
-                    <Button variant="outline-primary" className="w-100 py-3">
+                    <Button 
+                      variant="outline-primary" 
+                      className="w-100 py-3"
+                      onClick={() => navigate('/providers')}
+                >
                       🔍 Browse Providers
                     </Button>
                   </Col>
