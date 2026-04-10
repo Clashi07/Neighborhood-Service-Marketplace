@@ -14,8 +14,9 @@ connectDB();
 // Route files
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
-const serviceCategoryRoutes = require('./routes/serviceCategoryRoutes'); // ✅ ADD THIS
-const providerRoutes = require('./routes/providerRoutes'); //nahi
+const serviceCategoryRoutes = require('./routes/serviceCategoryRoutes');
+const portfolioRoutes = require('./routes/portfolioRoutes'); // ✅ ADDED
+
 const app = express();
 
 // Body parser
@@ -37,8 +38,9 @@ app.use('/uploads', express.static('uploads')); // ✅ ADDED
 // Mount routers
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/categories', serviceCategoryRoutes); // ✅ ADD THIS
-app.use('/api/providers', providerRoutes); //nahi
+app.use('/api/categories', serviceCategoryRoutes);
+app.use('/api/portfolio', portfolioRoutes); // ✅ ADDED
+
 // Error handler
 app.use(errorHandler);
 

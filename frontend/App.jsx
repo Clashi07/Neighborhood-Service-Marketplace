@@ -12,7 +12,11 @@ import CustomerDashboard from './views/pages/CustomerDashboard';
 import ProviderDashboard from './views/pages/ProviderDashboard';
 import AdminDashboard from './views/pages/AdminDashboard';
 import ManageCategoriesPage from './views/pages/ManageCategoriesPage';
-import ProviderPortfolioPage from './views/pages/ProviderPortfolioPage'; // ✅ ADDED
+import EditProviderProfile from './views/pages/EditProviderProfile';
+import ProviderProfileView from './views/pages/ProviderProfileView';
+import BrowseProviders from './views/pages/BrowseProviders';
+import BrowseServices from './views/pages/BrowseServices';
+import PortfolioPage from './views/pages/PortfolioPage';
 
 // Components
 import BrowseCategories from './views/components/provider/BrowseCategories';
@@ -41,6 +45,22 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/providers"
+              element={
+                <ProtectedRoute roles={['customer', 'admin']}>
+                  <BrowseProviders />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/services"
+              element={
+                <ProtectedRoute roles={['customer', 'admin']}>
+                  <BrowseServices />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Provider routes */}
             <Route
@@ -63,10 +83,26 @@ function App() {
               path="/provider/portfolio"
               element={
                 <ProtectedRoute roles={['provider']}>
-                  <ProviderPortfolioPage />
+                  <PortfolioPage />
                 </ProtectedRoute>
               }
-            />  {/* ✅ ADDED */}
+            />
+            <Route
+              path="/provider/edit-profile"
+              element={
+                <ProtectedRoute roles={['provider']}>
+                  <EditProviderProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/provider/profile"
+              element={
+                <ProtectedRoute roles={['provider']}>
+                  <ProviderProfileView />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Admin routes */}
             <Route

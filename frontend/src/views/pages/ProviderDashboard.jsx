@@ -118,7 +118,7 @@ const ProviderDashboard = () => {
                     <Button 
                       variant="outline-success" 
                       className="w-100 py-3"
-                      onClick={() => alert('Coming soon!')}
+                      onClick={() => navigate('/provider/portfolio')}
                     >
                       🖼️ Manage Portfolio
                     </Button>
@@ -176,6 +176,7 @@ const ProviderDashboard = () => {
         </Row>
       </Container>
     </div>
+
   );
 };
 

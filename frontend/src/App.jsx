@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './views/components/common/ProtectedRoute';
 
-// Pages
 import LoginPage from './views/pages/LoginPage';
 import RegisterPage from './views/pages/RegisterPage';
 import ForgotPasswordPage from './views/pages/ForgotPasswordPage';
@@ -11,13 +10,13 @@ import ResetPasswordPage from './views/pages/ResetPasswordPage';
 import CustomerDashboard from './views/pages/CustomerDashboard';
 import ProviderDashboard from './views/pages/ProviderDashboard';
 import AdminDashboard from './views/pages/AdminDashboard';
-import ManageCategoriesPage from './views/pages/ManageCategoriesPage'; // ✅ ADD THIS
-import EditProviderProfile from './views/pages/EditProviderProfile'; //nahi
-import ProviderProfileView from './views/pages/ProviderProfileView'; //nahi
-import BrowseProviders from './views/pages/BrowseProviders'; //nahi
-import BrowseServices from './views/pages/BrowseServices';//nahi
-// Components
-import BrowseCategories from './views/components/provider/BrowseCategories'; // ✅ ADD THIS
+import ManageCategoriesPage from './views/pages/ManageCategoriesPage';
+import EditProviderProfile from './views/pages/EditProviderProfile';
+import ProviderProfileView from './views/pages/ProviderProfileView';
+import BrowseProviders from './views/pages/BrowseProviders';
+import BrowseServices from './views/pages/BrowseServices';
+import PortfolioPage from './views/pages/PortfolioPage';
+import BrowseCategories from './views/components/provider/BrowseCategories';
 
 import './App.css';
 
@@ -27,6 +26,7 @@ function App() {
       <Router>
         <div className="App">
           <Routes>
+
             {/* Public routes */}
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<LoginPage />} />
@@ -43,8 +43,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
-            {/* Customer routes */}
             <Route
               path="/providers"
               element={
@@ -53,8 +51,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
-            {/* Customer routes */}
             <Route
               path="/services"
               element={
@@ -63,7 +59,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
 
             {/* Provider routes */}
             <Route
@@ -82,7 +77,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            {/* Provider edit profile routes */} //nahi
+            <Route
+              path="/provider/portfolio"
+              element={
+                <ProtectedRoute roles={['provider']}>
+                  <PortfolioPage />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/provider/edit-profile"
               element={
@@ -99,6 +101,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             {/* Admin routes */}
             <Route
               path="/admin/dashboard"
@@ -119,6 +122,7 @@ function App() {
 
             {/* 404 */}
             <Route path="*" element={<Navigate to="/login" replace />} />
+
           </Routes>
         </div>
       </Router>
