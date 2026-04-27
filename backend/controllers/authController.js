@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const ServiceProvider = require('../models/ServiceProvider'); // ← ADD THIS
 const sendToken = require('../utils/jwtToken');
 const sendEmail = require('../utils/sendEmail');
 const crypto = require('crypto');
@@ -27,6 +28,11 @@ exports.register = async (req, res, next) => {
       phone,
       role: role || 'customer'
     });
+
+    // ── Auto-create ServiceProvider profile if role is provider ──
+    if (user.role === 'provider') {
+      await ServiceProvider.create({ user: user._id });
+    }
 
     // Skip email verification in development
     if (process.env.NODE_ENV === 'development') {
@@ -80,7 +86,6 @@ exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    // Validate email & password
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -88,7 +93,6 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // Check for user
     const user = await User.findOne({ email }).select('+password');
 
     if (!user) {
@@ -98,7 +102,6 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // Check if password matches
     const isMatch = await user.comparePassword(password);
 
     if (!isMatch) {
@@ -108,7 +111,6 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // Check if account is active
     if (!user.isActive) {
       return res.status(401).json({
         success: false,
@@ -116,13 +118,19 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // ✅ NEW: Check if account is approved
-    // ✅ Only providers need approval
     if (user.role === 'provider' && !user.isApproved) {
       return res.status(403).json({
         success: false,
         message: 'Your account is pending approval by an administrator. You will be notified once approved.'
       });
+    }
+
+    // ── Ensure ServiceProvider profile exists (safety net for old accounts) ──
+    if (user.role === 'provider') {
+      const exists = await ServiceProvider.findOne({ user: user._id });
+      if (!exists) {
+        await ServiceProvider.create({ user: user._id });
+      }
     }
 
     sendToken(user, 200, res);

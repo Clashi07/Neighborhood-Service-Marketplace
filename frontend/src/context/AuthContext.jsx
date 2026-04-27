@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 import authService from '../services/authService';
 import { User } from '../models/User';
 
@@ -12,33 +12,33 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    try {
-      if (authService.isAuthenticated()) {
-        const userData = authService.getCurrentUserFromStorage();
-        setUser(new User(userData));
-      }
-    } catch (err) {
-      console.error('Auth check failed:', err);
-      setUser(null);
-    } finally {
-      setLoading(false);
+const getInitialUser = () => {
+  try {
+    const token = localStorage.getItem('token');
+    const raw = localStorage.getItem('user');
+    if (token && raw) {
+      const parsed = JSON.parse(raw);
+      return new User(parsed);
     }
-  };
+  } catch (e) {
+    console.error('Auth init error:', e);
+  }
+  return null;
+};
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(getInitialUser);
+  const [loading] = useState(false);
+  const [error, setError] = useState(null);
 
   const register = async (userData) => {
     try {
       setError(null);
       const data = await authService.register(userData);
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
       setUser(new User(data.user));
       return data;
     } catch (err) {
@@ -51,6 +51,10 @@ export const AuthProvider = ({ children }) => {
     try {
       setError(null);
       const data = await authService.login(credentials);
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
       setUser(new User(data.user));
       return data;
     } catch (err) {
@@ -62,9 +66,12 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await authService.logout();
-      setUser(null);
     } catch (err) {
-      console.error('Logout failed:', err);
+      console.error('Logout error:', err);
+    } finally {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      setUser(null);
     }
   };
 

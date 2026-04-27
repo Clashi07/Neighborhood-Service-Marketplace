@@ -32,4 +32,9 @@ class CategoryService {
   }
 }
 
-export default new CategoryService();
+const categoryService = new CategoryService();
+
+// Named export so ProviderCategoriesPage can use: import { getAllCategories } from '...'
+export const getAllCategories = () => categoryService.getAllCategories();
+
+export default categoryService;
