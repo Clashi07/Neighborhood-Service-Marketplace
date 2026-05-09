@@ -116,8 +116,8 @@ const BrowseProviders = () => {
                       <Card.Title className="fw-bold mb-1">{provider.user?.name || 'Unknown Provider'}</Card.Title>
 
                       <div className="mb-2 text-warning">
-                        ⭐ {provider.user?.rating || '0.0'}
-                        <span className="text-muted small"> ({provider.user?.numOfReviews || 0} reviews)</span>
+                        ⭐ {provider.averageRating > 0 ? Number(provider.averageRating).toFixed(1) : '0.0'}
+                        <span className="text-muted small"> ({provider.totalReviews || 0} reviews)</span>
                       </div>
 
                       <p className="text-success fw-bold mb-3">Starting at ৳{minPrice}</p>
@@ -143,7 +143,7 @@ const BrowseProviders = () => {
                       {/* ← CHANGED: Two buttons now */}
                       <div className="d-flex gap-2">
                         <Button variant="outline-success" className="w-100"
-                          onClick={() => alert(`Profile for ${provider.user?.name}`)}>
+                          onClick={() => navigate(`/provider/${provider.user?._id}`)}>
                           View Profile
                         </Button>
                         <Button variant="success" className="w-100"

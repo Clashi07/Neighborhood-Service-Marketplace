@@ -1,19 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Card, Row, Col, Button } from 'react-bootstrap';
+import { Container, Card, Row, Col, Button, Spinner } from 'react-bootstrap';
 import { getProviderProfile, deleteProviderProfile } from '../../services/providerService';
+import reviewService from '../../services/reviewService';
 
 const ProviderProfileView = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [loadingReviews, setLoadingReviews] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const res = await getProviderProfile();
-      setProfile(res.data);
+      try {
+        const res = await getProviderProfile();
+        setProfile(res.data);
+        if (res.data._id) {
+          fetchReviews(res.data._id);
+        }
+      } catch (err) {
+        console.error('Error fetching profile:', err);
+      }
     };
     fetchProfile();
   }, []);
+
+  const fetchReviews = async (providerId) => {
+    try {
+      setLoadingReviews(true);
+      const res = await reviewService.getProviderReviews(providerId);
+      setReviews(res.data || []);
+    } catch (err) {
+      console.error('Error fetching reviews:', err);
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
 
   const handleDelete = async () => {
     const confirmDelete = window.confirm("Are you sure you want to delete your profile? This cannot be undone.");
@@ -75,6 +97,52 @@ const ProviderProfileView = () => {
                 </Row>
               ) : (
                 <span className="text-muted fst-italic">No services configured yet.</span>
+              )}
+            </div>
+
+            <div className="mt-5 pt-4 border-top">
+              <h4 className="mb-4">Customer Reviews</h4>
+              {loadingReviews ? (
+                <div className="text-center py-4">
+                  <Spinner animation="border" variant="primary" />
+                </div>
+              ) : reviews && reviews.length > 0 ? (
+                <Row className="g-3">
+                  {reviews.map((review, index) => (
+                    <Col md={12} key={index}>
+                      <Card className="border-0 shadow-sm">
+                        <Card.Body>
+                          <div className="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                              <h6 className="fw-bold mb-1">
+                                {review.customer?.name || 'Anonymous'}
+                              </h6>
+                              <div className="mb-2">
+                                {[...Array(5)].map((_, i) => (
+                                  <span key={i} className={i < review.rating ? 'text-warning' : 'text-muted'}>
+                                    ★
+                                  </span>
+                                ))}
+                                <span className="ms-2 small text-muted">
+                                  {review.rating} out of 5 stars
+                                </span>
+                              </div>
+                            </div>
+                            {review.recommended && (
+                              <span className="badge bg-success">Recommended</span>
+                            )}
+                          </div>
+                          <p className="mb-2">{review.comment}</p>
+                          <small className="text-muted">
+                            {new Date(review.createdAt).toLocaleDateString()}
+                          </small>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  ))}
+                </Row>
+              ) : (
+                <p className="text-muted fst-italic">No reviews yet.</p>
               )}
             </div>
 

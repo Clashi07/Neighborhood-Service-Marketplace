@@ -5,17 +5,19 @@ const reviewSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Booking',
     required: true,
-    unique: true
+    unique: true  // FR-19.6: one review per booking
   },
   customer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: true,
+    index: true
   },
   provider: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: true,
+    index: true
   },
   rating: {
     type: Number,
@@ -23,16 +25,28 @@ const reviewSchema = new mongoose.Schema({
     min: 1,
     max: 5
   },
-  comment: String,
+  comment: {
+    type: String,
+    trim: true,
+    maxlength: 1000
+  },
   recommended: {
     type: Boolean,
     default: true
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: Date
+  editableUntil: {
+    type: Date  // FR-19.5: 48h window, set on create
+  }
+}, {
+  timestamps: true  // auto createdAt + updatedAt
 });
+
+// Virtual: is this review still editable?
+reviewSchema.virtual('isEditable').get(function () {
+  return this.editableUntil && new Date() < this.editableUntil;
+});
+
+reviewSchema.set('toJSON', { virtuals: true });
+reviewSchema.set('toObject', { virtuals: true });
 
 module.exports = mongoose.model('Review', reviewSchema);

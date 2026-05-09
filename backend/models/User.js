@@ -38,6 +38,12 @@ const userSchema = new mongoose.Schema({
     enum: ['customer', 'provider', 'admin'],
     default: 'customer'
   },
+  notificationSettings: {
+   emailNotifications: { type: Boolean, default: true },
+   bookingUpdates: { type: Boolean, default: true },
+   newBids: { type: Boolean, default: true },
+   rescheduleAlerts: { type: Boolean, default: true }
+},
   profilePhoto: {
     type: String,
     default: 'default-avatar.png'
@@ -77,6 +83,7 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
+  
 }, {
   timestamps: true,
   discriminatorKey: 'role'

@@ -69,6 +69,7 @@ const ProviderDashboard = () => {
               <Nav.Link onClick={() => navigate('/provider/my-bids')}>My Bids</Nav.Link>
               <Nav.Link onClick={() => navigate('/provider/my-jobs')}>My Jobs</Nav.Link>
               <Nav.Link onClick={() => navigate('/provider/booking-requests')}>
+              <Nav.Link onClick={() => navigate('/provider/settings')}>⚙️ Settings</Nav.Link>  
                 Booking Requests
                 {unreadCount > 0 && <Badge bg="danger" pill className="ms-1">{unreadCount}</Badge>}
               </Nav.Link>

@@ -37,6 +37,12 @@ const bookingSchema = new mongoose.Schema({
   completedAt: Date,
   cancelledAt: Date,
   cancellationReason: String,
+  rescheduleRequest: {                                    // ← ADD
+    requestedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    newDate: Date,
+    reason: String,
+    status: { type: String, enum: ['pending', 'approved', 'rejected'] }
+  },
   payment: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Payment'

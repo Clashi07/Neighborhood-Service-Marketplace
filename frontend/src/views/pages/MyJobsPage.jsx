@@ -19,6 +19,7 @@ const MyJobsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [completing, setCompleting] = useState('');
+  const [rescheduleAction, setRescheduleAction] = useState('');
 
   useEffect(() => { fetchJobs(); }, []);
 
@@ -35,18 +36,41 @@ const MyJobsPage = () => {
   };
 
   const handleComplete = async (bookingId) => {
-    if (!window.confirm('Mark this job as complete? This will notify the customer.')) return;
+    if (!window.confirm('Mark this job as complete?')) return;
     try {
       setCompleting(bookingId);
       await bookingService.completeBooking(bookingId);
-      // Update status locally
-      setBookings((prev) =>
-        prev.map((b) => b._id === bookingId ? { ...b, status: 'completed' } : b)
+      setBookings(prev =>
+        prev.map(b => b._id === bookingId ? { ...b, status: 'completed' } : b)
       );
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to complete job.');
     } finally {
       setCompleting('');
+    }
+  };
+
+  const handleRescheduleResponse = async (bookingId, action) => {
+    try {
+      setRescheduleAction(bookingId + action);
+      await bookingService.respondReschedule(bookingId, action);
+      setBookings(prev =>
+        prev.map(b => {
+          if (b._id !== bookingId) return b;
+          const updated = {
+            ...b,
+            rescheduleRequest: { ...b.rescheduleRequest, status: action === 'approve' ? 'approved' : 'rejected' }
+          };
+          if (action === 'approve') {
+            updated.scheduledDate = b.rescheduleRequest.newDate;
+          }
+          return updated;
+        })
+      );
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to respond to reschedule.');
+    } finally {
+      setRescheduleAction('');
     }
   };
 
@@ -85,33 +109,70 @@ const MyJobsPage = () => {
               <Col md={6} key={booking._id}>
                 <Card className="border-0 shadow-sm h-100">
                   <Card.Body>
-                    <div className="d-flex justify-content-between align-items-start mb-3">
+                    <div className="d-flex justify-content-between align-items-start mb-2">
                       <h6 className="fw-bold mb-0">{booking.serviceRequest?.title}</h6>
                       <Badge bg={statusColor[booking.status] || 'secondary'}>
                         {booking.status}
                       </Badge>
                     </div>
-                    <div className="small text-muted mb-1">
-                      Customer: <strong>{booking.customer?.name}</strong>
-                    </div>
-                    <div className="small text-muted mb-1">
-                      Agreed Price: <strong>৳{booking.agreedPrice}</strong>
-                    </div>
+
+                    <div className="small text-muted mb-1">Customer: <strong>{booking.customer?.name}</strong></div>
+                    <div className="small text-muted mb-1">Price: <strong>৳{booking.agreedPrice}</strong></div>
                     <div className="small text-muted mb-3">
                       Scheduled: {new Date(booking.scheduledDate).toLocaleDateString()}
                     </div>
 
+                    {/* Reschedule request from customer */}
+                    {booking.rescheduleRequest?.status === 'pending' && (
+                      <div className="bg-warning bg-opacity-10 border border-warning rounded p-3 mb-3">
+                        <div className="small fw-semibold mb-1">
+                          ⏳ Customer requested reschedule
+                        </div>
+                        <div className="small text-muted mb-1">
+                          New date: <strong>{new Date(booking.rescheduleRequest.newDate).toLocaleDateString()}</strong>
+                        </div>
+                        {booking.rescheduleRequest.reason && (
+                          <div className="small text-muted mb-2">
+                            Reason: {booking.rescheduleRequest.reason}
+                          </div>
+                        )}
+                        <div className="d-flex gap-2">
+                          <Button variant="success" size="sm"
+                            disabled={rescheduleAction === booking._id + 'approve'}
+                            onClick={() => handleRescheduleResponse(booking._id, 'approve')}>
+                            {rescheduleAction === booking._id + 'approve'
+                              ? <Spinner size="sm" /> : '✓ Approve'}
+                          </Button>
+                          <Button variant="outline-danger" size="sm"
+                            disabled={rescheduleAction === booking._id + 'reject'}
+                            onClick={() => handleRescheduleResponse(booking._id, 'reject')}>
+                            {rescheduleAction === booking._id + 'reject'
+                              ? <Spinner size="sm" /> : '✕ Reject'}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {booking.rescheduleRequest?.status === 'approved' && (
+                      <div className="small bg-success bg-opacity-10 border border-success rounded p-2 mb-3">
+                        ✅ Reschedule approved
+                      </div>
+                    )}
+                    {booking.rescheduleRequest?.status === 'rejected' && (
+                      <div className="small bg-danger bg-opacity-10 border border-danger rounded p-2 mb-3">
+                        ❌ Reschedule rejected
+                      </div>
+                    )}
+
+                    {/* Complete button */}
                     {booking.status === 'completed' ? (
                       <div className="text-success fw-semibold small">
-                        ✅ Job Completed — Payment received
+                        ✅ Job Completed
                       </div>
-                    ) : (
-                      <Button
-                        variant="success"
-                        size="sm"
+                    ) : booking.status !== 'cancelled' && (
+                      <Button variant="success" size="sm"
                         onClick={() => handleComplete(booking._id)}
-                        disabled={completing === booking._id}
-                      >
+                        disabled={completing === booking._id}>
                         {completing === booking._id
                           ? <><Spinner size="sm" className="me-1" />Completing...</>
                           : '✅ Mark as Complete'}

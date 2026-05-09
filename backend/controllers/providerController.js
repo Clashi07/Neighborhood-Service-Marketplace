@@ -110,3 +110,20 @@ exports.deleteProviderProfile = async (req, res) => {
     message: 'Profile deleted successfully'
   });
 };
+
+// GET /api/providers/public/:id
+exports.getPublicProviderById = async (req, res) => {
+  try {
+    const provider = await ServiceProvider.findOne({ user: req.params.id })
+      .populate('user', 'name email isApproved')
+      .populate('specializations.category', 'name icon');
+
+    if (!provider) {
+      return res.status(404).json({ success: false, message: 'Provider not found' });
+    }
+
+    res.status(200).json({ success: true, data: provider });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

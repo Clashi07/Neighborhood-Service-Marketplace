@@ -6,7 +6,9 @@ const {
   rejectUser,
   getUserProfile,
   updateUserProfile,
-  changePassword
+  changePassword,
+  updateNotificationSettings,  // ← ADD
+  deactivateAccount             // ← ADD
 } = require('../controllers/userController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
@@ -22,5 +24,7 @@ router.put('/:id/reject', protect, authorize('admin'), rejectUser);
 router.get('/profile', protect, getUserProfile);
 router.put('/profile', protect, updateUserProfile);
 router.put('/password', protect, changePassword);
+router.put('/notifications', protect, updateNotificationSettings);  // ← ADD
+router.put('/deactivate', protect, deactivateAccount);              // ← ADD
 
 module.exports = router;

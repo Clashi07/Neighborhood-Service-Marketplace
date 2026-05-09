@@ -65,6 +65,7 @@ const CustomerDashboard = () => {
               <Nav.Link onClick={() => navigate('/customer/my-requests')}>My Requests</Nav.Link>
               <Nav.Link onClick={() => navigate('/customer/my-bookings')}>My Bookings</Nav.Link>
               <Nav.Link onClick={() => navigate('/customer/notifications')} className="position-relative">
+              <Nav.Link onClick={() => navigate('/customer/settings')}>⚙️ Settings</Nav.Link>  
                 🔔
                 {unreadCount > 0 && (
                   <Badge bg="danger" pill className="position-absolute top-0 start-100 translate-middle" style={{ fontSize: '0.6rem' }}>

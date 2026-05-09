@@ -204,3 +204,49 @@ exports.changePassword = async (req, res) => {
     });
   }
 };
+
+// @desc    Update notification preferences
+// @route   PUT /api/users/notifications
+// @access  Private
+exports.updateNotificationSettings = async (req, res) => {
+  try {
+    const { emailNotifications, bookingUpdates, newBids, rescheduleAlerts } = req.body;
+
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    user.notificationSettings = {
+      emailNotifications: emailNotifications ?? user.notificationSettings?.emailNotifications ?? true,
+      bookingUpdates: bookingUpdates ?? user.notificationSettings?.bookingUpdates ?? true,
+      newBids: newBids ?? user.notificationSettings?.newBids ?? true,
+      rescheduleAlerts: rescheduleAlerts ?? user.notificationSettings?.rescheduleAlerts ?? true
+    };
+
+    await user.save({ validateBeforeSave: false });
+    res.status(200).json({ success: true, message: 'Notification settings updated', data: user });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Deactivate own account
+// @route   PUT /api/users/deactivate
+// @access  Private
+exports.deactivateAccount = async (req, res) => {
+  try {
+    const { password } = req.body;
+
+    const user = await User.findById(req.user.id).select('+password');
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) return res.status(401).json({ success: false, message: 'Incorrect password' });
+
+    user.isActive = false;
+    await user.save({ validateBeforeSave: false });
+
+    res.status(200).json({ success: true, message: 'Account deactivated successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
